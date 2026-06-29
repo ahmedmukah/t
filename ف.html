@@ -59,7 +59,6 @@
             scroll-behavior: smooth;
         }
 
-        /* تنسيق سكرول بار */
         #chat-box::-webkit-scrollbar { width: 6px; }
         #chat-box::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
 
@@ -161,32 +160,38 @@
     </div>
 
     <script>
-        // مفتاح الـ API بتاعك زي ما طلبته بالظبط
         const apiKey = 'wgpt_yef3zqejl79bmhaj5k0ppdxtymolek3crq3tjoto';
-        
-        // رابط الـ API (لو المفتاح ده تبع خدمة تانية غير OpenAI زي خدمات البروكسي، هتحتاج تغير الرابط ده برابط الخدمة بتاعتهم)
         const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
+        // اختبار سريع إن الكود اتقرأ بنجاح
+        console.log("✅ الشات بوت جاهز!");
+
         async function sendMessage() {
-            const inputField = document.getElementById('user-input');
-            const message = inputField.value.trim();
-            if (!message) return;
-
-            // إضافة رسالة المستخدم للشاشة
-            appendMessage(message, 'user-msg');
-            inputField.value = '';
-
-            // إضافة حالة "بيكتب..."
-            const chatBox = document.getElementById('chat-box');
-            const loadingId = 'loading-' + Date.now();
-            const loadingMsg = document.createElement('div');
-            loadingMsg.className = 'message loading';
-            loadingMsg.id = loadingId;
-            loadingMsg.textContent = 'جاري التفكير... ⏳';
-            chatBox.appendChild(loadingMsg);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
             try {
+                const inputField = document.getElementById('user-input');
+                const message = inputField.value.trim();
+                
+                // 1. تنبيه لو الخانة فاضية
+                if (!message) {
+                    alert('⚠️ مفيش رسالة مكتوبة! اكتب كلام الأول قبل ما تدوس إرسال.');
+                    return;
+                }
+
+                // 2. إظهار رسالة المستخدم في الشات
+                appendMessage(message, 'user-msg');
+                inputField.value = '';
+
+                // 3. إظهار حالة "جاري التفكير..."
+                const chatBox = document.getElementById('chat-box');
+                const loadingId = 'loading-' + Date.now();
+                const loadingMsg = document.createElement('div');
+                loadingMsg.className = 'message loading';
+                loadingMsg.id = loadingId;
+                loadingMsg.textContent = 'جاري التفكير... ⏳';
+                chatBox.appendChild(loadingMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // 4. إرسال الطلب للـ API
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
@@ -194,27 +199,35 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'gpt-3.5-turbo', // تقدر تغير الموديل لو الـ API بتاعك بيدعم موديلات تانية
+                        model: 'gpt-3.5-turbo',
                         messages: [{ role: 'user', content: message }]
                     })
                 });
 
                 const data = await response.json();
                 
-                // مسح رسالة التحميل
+                // إزالة علامة التحميل
                 document.getElementById(loadingId).remove();
 
+                // 5. استقبال الرد
                 if (data.choices && data.choices.length > 0) {
                     appendMessage(data.choices[0].message.content, 'bot-msg');
                 } else if (data.error) {
-                    appendMessage('رسالة خطأ من السيرفر: ' + data.error.message, 'bot-msg');
+                    alert('❌ السيرفر رفض الطلب: ' + data.error.message);
+                    appendMessage('السيرفر رفض الطلب، ممكن مفتاح الـ API غلط أو محتاج تعديل في الرابط.', 'bot-msg');
                 } else {
-                    appendMessage('حصلت مشكلة ومش قادر أرد دلوقتي، اتأكد من صلاحية الـ API Key.', 'bot-msg');
+                    alert('⚠️ السيرفر رد بس مفيش رسالة مفهومة!');
+                    appendMessage('حصلت مشكلة ومش قادر أرد دلوقتي.', 'bot-msg');
                 }
             } catch (error) {
-                document.getElementById(loadingId).remove();
-                appendMessage('عفواً، في مشكلة في الاتصال بالإنترنت أو بالسيرفر.', 'bot-msg');
-                console.error('Error:', error);
+                // 6. لو حصلت مشكلة في الإنترنت أو الاتصال
+                alert('❌ حصلت مشكلة في الاتصال! التفاصيل في الـ Console.');
+                console.error('Error Details:', error);
+                
+                const loadingElement = document.querySelector('.loading');
+                if (loadingElement) loadingElement.remove();
+                
+                appendMessage('عفواً، مفيش استجابة. تأكد من إنك متصل بالإنترنت وإن مفتاح الـ API صالح.', 'bot-msg');
             }
         }
 
