@@ -149,7 +149,7 @@
     <div id="chat-container">
         <div id="chat-header">🤖 المساعد الذكي (WormGPT)</div>
         <div id="chat-box">
-            <div class="message bot-msg">أهلاً بيك! أنا الشات بوت الخاص بك، اكتب أي حاجة وإنتظر الرد المباشر.</div>
+            <div class="message bot-msg">أهلاً بيك! أنا الشات بوت الجاهز الخاص بك، اكتب رسالتك وسأقوم بالرد فوراً.</div>
         </div>
         <div id="input-area">
             <input type="text" id="user-input" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
@@ -160,8 +160,8 @@
     </div>
 
     <script>
-        // مفتاح الـ API والرابط الصحيح للخدمة
         const apiKey = 'wgpt_yef3zqejl79bmhaj5k0ppdxtymolek3crq3tjoto';
+        // تم استخدام رابط الخدمة المباشر مع إضافة خيارات التوافق
         const apiUrl = 'https://api.wormgpt.pw/v1/chat/completions';
 
         async function sendMessage() {
@@ -169,11 +169,9 @@
             const message = inputField.value.trim();
             if (!message) return;
 
-            // إظهار رسالة المستخدم
             appendMessage(message, 'user-msg');
             inputField.value = '';
 
-            // إظهار تأثير "جاري التفكير..."
             const chatBox = document.getElementById('chat-box');
             const loadingId = 'loading-' + Date.now();
             const loadingMsg = document.createElement('div');
@@ -191,13 +189,13 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        model: 'wormgpt', // إضافة الموديل الافتراضي للسيرفر لتجنب الرفض
                         messages: [{ role: 'user', content: message }]
                     })
                 });
 
                 const data = await response.json();
                 
-                // إزالة تأثير التحميل
                 document.getElementById(loadingId).remove();
 
                 if (data.choices && data.choices.length > 0) {
@@ -205,11 +203,12 @@
                 } else if (data.error) {
                     appendMessage('خطأ من السيرفر: ' + data.error.message, 'bot-msg');
                 } else {
-                    appendMessage('لم يتم استلام رد واضح من السيرفر.', 'bot-msg');
+                    appendMessage('السيرفر استقبل الرسالة لكن لم يرسل نصاً واضحاً.', 'bot-msg');
                 }
             } catch (error) {
                 document.getElementById(loadingId).remove();
-                appendMessage('عفواً، واجهت مشكلة في الاتصال بالخدمة.', 'bot-msg');
+                // إذا استمر الخطأ، فالموقع يحظر الطلبات المباشرة من خارج السيرفرات الخاصة به (CORS)
+                appendMessage('عفواً، واجهت مشكلة في الاتصال بالخدمة. تأكد من صلاحية المفتاح أو جرب تشغيل الملف على سيرفر محلي (Live Server).', 'bot-msg');
                 console.error('Error:', error);
             }
         }
