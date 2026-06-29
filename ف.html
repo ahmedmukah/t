@@ -13,7 +13,7 @@
             --primary-hover: #ff5566;
             --user-msg: #ff3344;
             --bot-msg: #212431;
-            --text-light: #f1f2f6;
+            --text-light: #fdfdfd;
         }
 
         body {
@@ -25,53 +25,60 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            /* تنعيم حواف الخطوط لجودة قراءة أعلى */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         #chat-container {
             width: 100%;
-            max-width: 480px;
-            height: 85vh;
+            max-width: 650px; /* تم تكبير عرض الشات ليكون مريحاً أكثر للعين */
+            height: 88vh;
             background: var(--chat-bg);
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid #252836;
+            border: 1px solid #2a2d3e;
         }
 
         #chat-header {
             background: linear-gradient(135deg, var(--primary), #b31020);
             color: #fff;
-            padding: 20px;
+            padding: 22px;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            box-shadow: 0 4px 15px rgba(255, 51, 68, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 51, 68, 0.25);
+            letter-spacing: 1px;
         }
 
         #chat-box {
             flex: 1;
-            padding: 20px;
+            padding: 25px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
             scroll-behavior: smooth;
         }
 
-        #chat-box::-webkit-scrollbar { width: 6px; }
-        #chat-box::-webkit-scrollbar-thumb { background: #2f3542; border-radius: 10px; }
+        #chat-box::-webkit-scrollbar { width: 8px; }
+        #chat-box::-webkit-scrollbar-thumb { background: #3f4555; border-radius: 10px; }
 
         .message {
-            padding: 12px 18px;
-            border-radius: 18px;
-            max-width: 80%;
-            line-height: 1.6;
-            word-wrap: break-word;
-            font-size: 0.95rem;
+            padding: 16px 22px;
+            border-radius: 20px;
+            max-width: 85%;
+            line-height: 1.9; /* تباعد مريح بين السطور */
+            font-size: 1.15rem; /* تكبير حجم الخط */
+            font-weight: 600; /* جعل الخط أعرض وأكثر وضوحاً */
+            letter-spacing: 0.3px;
             animation: fadeIn 0.3s ease-in-out;
-            white-space: pre-line; /* للحفاظ على السطور الجديدة والفقرات */
+            /* الخاصية دي بتمنع سقوط المسافات وبتحافظ على تنسيق الفقرات زي ما السيرفر باعتها */
+            white-space: pre-wrap; 
+            word-wrap: break-word;
         }
 
         @keyframes fadeIn {
@@ -83,48 +90,51 @@
             background: var(--user-msg);
             color: #fff;
             align-self: flex-start;
-            border-top-right-radius: 4px;
+            border-top-right-radius: 5px;
+            box-shadow: 0 4px 10px rgba(255, 51, 68, 0.15);
         }
 
         .bot-msg {
             background: var(--bot-msg);
             color: var(--text-light);
             align-self: flex-end;
-            border-top-left-radius: 4px;
+            border-top-left-radius: 5px;
+            border: 1px solid #2a2d3e;
         }
 
         #input-area {
             display: flex;
-            padding: 15px;
+            padding: 18px;
             background: #0d0e12;
-            border-top: 1px solid #252836;
-            gap: 10px;
+            border-top: 1px solid #2a2d3e;
+            gap: 12px;
         }
 
         #user-input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 15px 20px;
             border: none;
             border-radius: 25px;
             background: #212431;
             color: #fff;
             font-family: 'Cairo', sans-serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
             outline: none;
             transition: 0.3s;
-            border: 1px solid #252836;
+            border: 1px solid #2a2d3e;
         }
 
         #user-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(255, 51, 68, 0.2);
+            box-shadow: 0 0 12px rgba(255, 51, 68, 0.25);
         }
 
         #send-btn {
             background: var(--primary);
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             color: #fff;
             cursor: pointer;
@@ -132,21 +142,22 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(255, 51, 68, 0.3);
+            box-shadow: 0 4px 12px rgba(255, 51, 68, 0.3);
         }
 
         #send-btn:hover {
             background: var(--primary-hover);
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .loading {
             align-self: flex-end;
-            font-size: 0.85rem;
+            font-size: 1rem;
             color: #ff3344;
             background: transparent;
             padding: 0;
-            font-weight: 600;
+            font-weight: 800;
+            border: none;
         }
     </style>
 </head>
@@ -155,12 +166,12 @@
     <div id="chat-container">
         <div id="chat-header">🤖 WormGPT - الذكاء غير المقيد</div>
         <div id="chat-box">
-            <div class="message bot-msg">أهلاً بك! تم إصلاح نظام القراءة، أنا جاهز تماماً للرد عليك الآن.</div>
+            <div class="message bot-msg">أهلاً بك! تم تحديث جودة الخط ونظام القراءة ليكون أكثر دقة ووضوحاً. تفضل بكتابة رسالتك...</div>
         </div>
         <div id="input-area">
             <input type="text" id="user-input" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
         </div>
     </div>
@@ -202,44 +213,59 @@
 
                 const responseText = await response.text();
                 
-                // هنا بنفك السطور المفرطة ونجمع الكلام
                 let finalResponseText = "";
                 let serverError = "";
                 
-                const lines = responseText.split('\n');
-                for (let line of lines) {
-                    let trimmedLine = line.trim();
-                    if (trimmedLine.startsWith('data:')) {
-                        let jsonStr = trimmedLine.substring(5).trim();
-                        if (!jsonStr) continue;
-                        
-                        try {
-                            let parsedChunk = JSON.parse(jsonStr);
-                            if (parsedChunk.content) {
-                                finalResponseText += parsedChunk.content;
+                // نظام القراءة الجديد: أكثر صرامة في فك التشفير وعدم إسقاط أي حرف
+                try {
+                    // محاولة قراءة الرد ككتلة واحدة (لو السيرفر بطل يبعت بث مباشر)
+                    let jsonResponse = JSON.parse(responseText);
+                    if (jsonResponse.choices && jsonResponse.choices.length > 0) {
+                        finalResponseText = jsonResponse.choices[0].message.content;
+                    } else if (jsonResponse.content) {
+                        finalResponseText = jsonResponse.content;
+                    } else if (jsonResponse.error) {
+                        serverError = jsonResponse.error.message || jsonResponse.error;
+                    }
+                } catch (e) {
+                    // لو السيرفر بعتها متقطعة (Streaming)، هنقرأها سطر سطر بتركيز
+                    const lines = responseText.split('\n');
+                    for (let line of lines) {
+                        // إزالة كلمة data: باحترافية عشان متبوظش المسافات
+                        if (line.trim().startsWith('data:')) {
+                            let jsonStr = line.replace(/^\s*data:\s*/, '').trim();
+                            if (jsonStr === '[DONE]' || !jsonStr) continue;
+                            
+                            try {
+                                let parsedChunk = JSON.parse(jsonStr);
+                                if (parsedChunk.content !== undefined) {
+                                    finalResponseText += parsedChunk.content;
+                                } else if (parsedChunk.choices && parsedChunk.choices[0].delta && parsedChunk.choices[0].delta.content !== undefined) {
+                                    finalResponseText += parsedChunk.choices[0].delta.content;
+                                }
+                                if (parsedChunk.error) {
+                                    serverError = parsedChunk.error;
+                                }
+                            } catch (parseError) {
+                                // تجاهل الأسطر غير المكتملة بدون تعطيل الكود
                             }
-                            if (parsedChunk.error) {
-                                serverError = parsedChunk.error;
-                            }
-                        } catch (e) {
-                            // تجاهل السطور الفارغة أو غير المكتملة
                         }
                     }
                 }
                 
                 document.getElementById(loadingId).remove();
 
-                if (finalResponseText.trim()) {
+                if (finalResponseText) {
                     appendMessage(finalResponseText, 'bot-msg');
                 } else if (serverError) {
                     appendMessage('خطأ من السيرفر: ' + serverError, 'bot-msg');
                 } else {
-                    appendMessage('السيرفر أرسل بيانات فارغة، تأكد من حسابك على الموقع.', 'bot-msg');
+                    appendMessage('السيرفر أرسل رداً فارغاً.', 'bot-msg');
                 }
             } catch (error) {
                 document.getElementById(loadingId).remove();
-                appendMessage('فشل الاتصال تماماً بالخادم.', 'bot-msg');
-                console.error('Error:', error);
+                appendMessage('فشل الاتصال بالخادم، تأكد من الإنترنت.', 'bot-msg');
+                console.error('Error Details:', error);
             }
         }
 
