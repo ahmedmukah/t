@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شات بوت المساعد الذكي - WormGPT</title>
-    <!-- استدعاء خط كايرو المميز -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0d0e12;
             --chat-bg: #15171e;
-            --primary: #ff3344; /* لون أحمر سايبر مخصص لـ WormGPT */
+            --primary: #ff3344; 
             --primary-hover: #ff5566;
             --user-msg: #ff3344;
             --bot-msg: #212431;
@@ -72,6 +71,7 @@
             word-wrap: break-word;
             font-size: 0.95rem;
             animation: fadeIn 0.3s ease-in-out;
+            white-space: pre-line; /* للحفاظ على السطور الجديدة والفقرات */
         }
 
         @keyframes fadeIn {
@@ -155,7 +155,7 @@
     <div id="chat-container">
         <div id="chat-header">🤖 WormGPT - الذكاء غير المقيد</div>
         <div id="chat-box">
-            <div class="message bot-msg">أهلاً بك! نظام WormGPT جاهز للرد على أي استفسار الآن وبدون أي قيود. اكتب رسالتك...</div>
+            <div class="message bot-msg">أهلاً بك! تم إصلاح نظام القراءة، أنا جاهز تماماً للرد عليك الآن.</div>
         </div>
         <div id="input-area">
             <input type="text" id="user-input" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
@@ -166,11 +166,8 @@
     </div>
 
     <script>
-        // البيانات الخاصة بك من التوثيق
         const apiKey = 'wgpt_yef3zqejl79bmhaj5k0ppdxtymolek3crq3tjoto';
         const modelName = 'wormgpt-uncensored';
-        
-        // تم دمج البروكسي (corsproxy.io) لحل مشكلة الحظر في المتصفح تماماً وتسهيل التشغيل المباشر
         const apiUrl = 'https://corsproxy.io/?https://api.wormgpt.pw/v1/chat/completions';
 
         async function sendMessage() {
@@ -178,17 +175,15 @@
             const message = inputField.value.trim();
             if (!message) return;
 
-            // عرض رسالة المستخدم
             appendMessage(message, 'user-msg');
             inputField.value = '';
 
-            // تأثير التحميل
             const chatBox = document.getElementById('chat-box');
             const loadingId = 'loading-' + Date.now();
             const loadingMsg = document.createElement('div');
             loadingMsg.className = 'message loading';
             loadingMsg.id = loadingId;
-            loadingMsg.textContent = 'جاري توليد الرد... ⚡';
+            loadingMsg.textContent = 'جاري معالجة الرد... ⚡';
             chatBox.appendChild(loadingMsg);
             chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -205,32 +200,46 @@
                     })
                 });
 
-                // قراءة الاستجابة كنص أولاً لضمان كشف الأخطاء بوضوح
                 const responseText = await response.text();
-                let data;
                 
-                try {
-                    data = JSON.parse(responseText);
-                } catch (e) {
-                    document.getElementById(loadingId).remove();
-                    appendMessage('رد غير متوقع من السيرفر: ' + responseText, 'bot-msg');
-                    return;
+                // هنا بنفك السطور المفرطة ونجمع الكلام
+                let finalResponseText = "";
+                let serverError = "";
+                
+                const lines = responseText.split('\n');
+                for (let line of lines) {
+                    let trimmedLine = line.trim();
+                    if (trimmedLine.startsWith('data:')) {
+                        let jsonStr = trimmedLine.substring(5).trim();
+                        if (!jsonStr) continue;
+                        
+                        try {
+                            let parsedChunk = JSON.parse(jsonStr);
+                            if (parsedChunk.content) {
+                                finalResponseText += parsedChunk.content;
+                            }
+                            if (parsedChunk.error) {
+                                serverError = parsedChunk.error;
+                            }
+                        } catch (e) {
+                            // تجاهل السطور الفارغة أو غير المكتملة
+                        }
+                    }
                 }
                 
-                // إزالة رسالة التحميل
                 document.getElementById(loadingId).remove();
 
-                if (data.choices && data.choices.length > 0) {
-                    appendMessage(data.choices[0].message.content, 'bot-msg');
-                } else if (data.error) {
-                    appendMessage('خطأ من السيرفر: ' + data.error.message, 'bot-msg');
+                if (finalResponseText.trim()) {
+                    appendMessage(finalResponseText, 'bot-msg');
+                } else if (serverError) {
+                    appendMessage('خطأ من السيرفر: ' + serverError, 'bot-msg');
                 } else {
-                    appendMessage('تم الاتصال بنجاح ولكن لم يتم إرجاع نص مفيد.', 'bot-msg');
+                    appendMessage('السيرفر أرسل بيانات فارغة، تأكد من حسابك على الموقع.', 'bot-msg');
                 }
             } catch (error) {
                 document.getElementById(loadingId).remove();
-                appendMessage('فشل الاتصال! تأكد من أن جهازك متصل بالإنترنت وموقع WormGPT يعمل.', 'bot-msg');
-                console.error('Error Details:', error);
+                appendMessage('فشل الاتصال تماماً بالخادم.', 'bot-msg');
+                console.error('Error:', error);
             }
         }
 
