@@ -25,14 +25,13 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            /* تنعيم حواف الخطوط لجودة قراءة أعلى */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
         #chat-container {
             width: 100%;
-            max-width: 650px; /* تم تكبير عرض الشات ليكون مريحاً أكثر للعين */
+            max-width: 650px;
             height: 88vh;
             background: var(--chat-bg);
             border-radius: 20px;
@@ -71,12 +70,11 @@
             padding: 16px 22px;
             border-radius: 20px;
             max-width: 85%;
-            line-height: 1.9; /* تباعد مريح بين السطور */
-            font-size: 1.15rem; /* تكبير حجم الخط */
-            font-weight: 600; /* جعل الخط أعرض وأكثر وضوحاً */
+            line-height: 1.9;
+            font-size: 1.15rem;
+            font-weight: 600;
             letter-spacing: 0.3px;
             animation: fadeIn 0.3s ease-in-out;
-            /* الخاصية دي بتمنع سقوط المسافات وبتحافظ على تنسيق الفقرات زي ما السيرفر باعتها */
             white-space: pre-wrap; 
             word-wrap: break-word;
         }
@@ -177,9 +175,10 @@
     </div>
 
     <script>
+        // إعدادات الـ API الجديدة بناءً على التوثيق
         const apiKey = 'wgpt_yef3zqejl79bmhaj5k0ppdxtymolek3crq3tjoto';
         const modelName = 'wormgpt-uncensored';
-        const apiUrl = 'https://corsproxy.io/?https://api.wormgpt.pw/v1/chat/completions';
+        const apiUrl = 'https://api.wormgpt.pw/v1/chat/completions';
 
         async function sendMessage() {
             const inputField = document.getElementById('user-input');
@@ -216,9 +215,7 @@
                 let finalResponseText = "";
                 let serverError = "";
                 
-                // نظام القراءة الجديد: أكثر صرامة في فك التشفير وعدم إسقاط أي حرف
                 try {
-                    // محاولة قراءة الرد ككتلة واحدة (لو السيرفر بطل يبعت بث مباشر)
                     let jsonResponse = JSON.parse(responseText);
                     if (jsonResponse.choices && jsonResponse.choices.length > 0) {
                         finalResponseText = jsonResponse.choices[0].message.content;
@@ -228,10 +225,8 @@
                         serverError = jsonResponse.error.message || jsonResponse.error;
                     }
                 } catch (e) {
-                    // لو السيرفر بعتها متقطعة (Streaming)، هنقرأها سطر سطر بتركيز
                     const lines = responseText.split('\n');
                     for (let line of lines) {
-                        // إزالة كلمة data: باحترافية عشان متبوظش المسافات
                         if (line.trim().startsWith('data:')) {
                             let jsonStr = line.replace(/^\s*data:\s*/, '').trim();
                             if (jsonStr === '[DONE]' || !jsonStr) continue;
@@ -247,7 +242,7 @@
                                     serverError = parsedChunk.error;
                                 }
                             } catch (parseError) {
-                                // تجاهل الأسطر غير المكتملة بدون تعطيل الكود
+                                // تجاهل الأخطاء العابرة أثناء البث
                             }
                         }
                     }
